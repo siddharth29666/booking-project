@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | It's me nails</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Admin specific styles override */
+        body {
+            background-color: #f7f9fc;
+            padding-top: 80px; /* Space for fixed header */
+        }
+        
+        .admin-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .date-filter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .appointments-table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .appointments-table th, .appointments-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .appointments-table th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .appointments-table tr:hover {
+            background-color: #fdfdfd;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .delete-btn {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background-color: #c62828;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Reusing Header from index.html -->
+    <header>
+        <nav>
+            <div class="logo">It's me nails <span style="font-size: 0.8rem; color: #666; font-weight: normal;">| Admin</span></div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <div class="dashboard-header">
+            <h1>Appointments</h1>
+            <div class="date-filter">
+                <label for="adminDate">Filter by Date:</label>
+                <input type="date" id="adminDate">
+            </div>
+        </div>
+
+        <div id="appointmentsList">
+            <!-- Table will be injected here -->
+            <div class="empty-state">Select a date to view appointments</div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

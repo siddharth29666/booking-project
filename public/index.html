@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>It's me nails | Nail Art Salon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header / Navigation -->
+    <header>
+        <nav>
+            <div class="logo">It's me nails</div>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#booking" class="nav-btn">Book Now</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Welcome to It's me nails</h1>
+            <p class="tagline">Where beauty meets perfection</p>
+            <a href="#booking" class="cta-button">Book Appointment</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About Us</h2>
+            <div class="about-content">
+                <p>At <strong>It's me nails</strong>, we believe your hands deserve the royal treatment. Our salon specializes in exquisite nail art, premium care, and a relaxing atmosphere designed to make you feel beautiful inside and out. Whether you're looking for a simple manicure or an elaborate design, our expert technicians are here to bring your vision to life.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2>Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="icon"><i class="fa-solid fa-paintbrush"></i></div>
+                    <h3>Nail Art</h3>
+                    <p>Custom designs, intricate patterns, and personalized art for your unique style.</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon"><i class="fa-regular fa-gem"></i></div>
+                    <h3>Gel Polish</h3>
+                    <p>Long-lasting, high-shine gel polish in a vast array of vibrant colors.</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon"><i class="fa-solid fa-hand-sparkles"></i></div>
+                    <h3>Nail Extensions</h3>
+                    <p>Durable and natural-looking extensions to give you the length required.</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                    <h3>Manicure</h3>
+                    <p>Classic nail care including shaping, cuticle work, and a relaxing hand massage.</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon"><i class="fa-solid fa-shoe-prints"></i></div> <!-- Using shoe prints as closest proxy for feet/pedi if foot not available in free set -->
+                    <h3>Pedicure</h3>
+                    <p>Rejuvenate your feet with our comprehensive pedicure treatments.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="booking" class="booking">
+        <div class="container">
+            <h2>Book Your Appointment</h2>
+            <p class="section-subtitle">Reserve your spot significantly easier online.</p>
+            
+            <form id="bookingForm" class="booking-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Jane Doe">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Mobile Number</label>
+                    <input type="tel" id="phone" name="phone"  placeholder="0123456789">
+                </div>
+
+                <div class="form-group">
+                    <label for="service">Service</label>
+                    <select id="service" name="service" required>
+                        <option value="" disabled selected>Select a Service</option>
+                        <option value="Nail Art">Nail Art</option>
+                        <option value="Gel Polish">Gel Polish</option>
+                        <option value="Nail Extensions">Nail Extensions</option>
+                        <option value="Manicure">Manicure</option>
+                        <option value="Pedicure">Pedicure</option>
+                        <option value="Others">Others</option>
+
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="time">Time Slot</label>
+                        <select id="time" name="time" required>
+                            <option value="" disabled selected>Select Time</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="01:00 PM">01:00 PM</option>
+                            <option value="02:00 PM">02:00 PM</option>
+                            <option value="03:00 PM">03:00 PM</option>
+                            <option value="04:00 PM">04:00 PM</option>
+                            <option value="05:00 PM">05:00 PM</option>
+                            <option value="06:00 PM">06:00 PM</option>
+                            <option value="07:00 PM">07:00 PM</option>
+                            <option value="08:00 PM">08:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Confirm Booking</button>
+            </form>
+            <div id="bookingMessage"></div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fa-solid fa-phone"></i>
+                    <p>9316469587</p>
+                </div>
+                <div class="contact-item">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <p><a href="https://wa.me/9316469587">Chat on WhatsApp</a></p>
+                </div>
+                <div class="contact-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <p>UG 11, Atlanta Shopper, beside reliance smart bazaar, Vesu, Surat, Gujarat 395007</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 It's me nails. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
