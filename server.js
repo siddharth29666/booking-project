@@ -124,20 +124,39 @@ async function addCalendarEvent(bookingData) {
 }
 
 // Helper: Send Email Notification
+// async function sendEmailNotification(bookingData) {
+//     if (!process.env.EMAIL_USER) {
+//         console.log("Email user not configured, skipping email.");
+//         return;
+//     }
+
+//     const mailOptions = {
+//         from: process.env.EMAIL_USER,
+//         to: process.env.OWNER_EMAIL || process.env.EMAIL_USER, // Send to owner
+//         subject: `New Booking: ${bookingData.name}`,
+//         text: `New appointment booked!\n\nName: ${bookingData.name}\nPhone: ${bookingData.phone}\nService: ${bookingData.service}\nDate: ${bookingData.date}\nTime: ${bookingData.time}`
+//     };
+
+//     await transporter.sendMail(mailOptions);
+// }
+
 async function sendEmailNotification(bookingData) {
-    if (!process.env.EMAIL_USER) {
-        console.log("Email user not configured, skipping email.");
-        return;
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.OWNER_EMAIL || process.env.EMAIL_USER,
+            subject: `New Booking: ${bookingData.name}`,
+            text: `New appointment booked!\n\nName: ${bookingData.name}\nPhone: ${bookingData.phone}\nService: ${bookingData.service}\nDate: ${bookingData.date}\nTime: ${bookingData.time}`
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log("MAIL RESPONSE:", info);
+
+    } catch (err) {
+        console.error("FULL EMAIL ERROR:");
+        console.error(err);
+        throw err;
     }
-
-    const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: process.env.OWNER_EMAIL || process.env.EMAIL_USER, // Send to owner
-        subject: `New Booking: ${bookingData.name}`,
-        text: `New appointment booked!\n\nName: ${bookingData.name}\nPhone: ${bookingData.phone}\nService: ${bookingData.service}\nDate: ${bookingData.date}\nTime: ${bookingData.time}`
-    };
-
-    await transporter.sendMail(mailOptions);
 }
 
 // Helper: List Events from Google Calendar
@@ -357,8 +376,10 @@ app.post('/api/book', async (req, res) => {
 
         // ✅ Send Email (Background task)
         sendEmailNotification(req.body)
-            .then(() => console.log("Email sent successfully"))
-            .catch(err => console.error("Email failed to send:", err.message));
+        console.log("Email sent successfully");
+
+            // .then(() => console.log("Email sent successfully"))
+            // .catch(err => console.error("Email failed to send:", err.message));
 
         return res.json({ message: "Booking successful!" });
 
