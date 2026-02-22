@@ -50,15 +50,21 @@ async function addCalendarEvent(bookingData) {
             scopes: SCOPES,
         });
 
-        const calendar = google.calendar({ version: 'v3', auth });
+        // const calendar = google.calendar({ version: 'v3', auth });
+        const authClient = await auth.getClient();
+
+        const calendar = google.calendar({
+            version: 'v3',
+            auth: authClient,
+        });
 
         // Calculate start and end time (assuming 1 hour duration)
         // Format: YYYY-MM-DDTHH:mm:ss
         // Input time is like "11:00 AM". Need to convert to 24h format for ISO string
-        
+
         const [timePart, modifier] = bookingData.time.split(' ');
         let [hours, minutes] = timePart.split(':');
-        
+
         if (hours === '12') {
             hours = '00';
         }
@@ -122,13 +128,20 @@ async function listCalendarEvents(date) {
             scopes: SCOPES,
         });
 
-        const calendar = google.calendar({ version: 'v3', auth });
+        // const calendar = google.calendar({ version: 'v3', auth });
+
+        const authClient = await auth.getClient();
+
+        const calendar = google.calendar({
+            version: 'v3',
+            auth: authClient,
+        });
 
         // Create timeMin and timeMax for the entire day (Local Time -> UTC)
         // Note: For simplicity, we will just query for the whole day in the user's timezone if possible
         // But Google Calendar API expects ISO strings. 
         // Let's assume the 'date' param is 'YYYY-MM-DD'
-        
+
         const timeMin = new Date(`${date}T00:00:00`).toISOString();
         const timeMax = new Date(`${date}T23:59:59`).toISOString();
 
@@ -156,7 +169,13 @@ async function deleteCalendarEvent(eventId) {
             scopes: SCOPES,
         });
 
-        const calendar = google.calendar({ version: 'v3', auth });
+        // const calendar = google.calendar({ version: 'v3', auth });
+        const authClient = await auth.getClient();
+
+        const calendar = google.calendar({
+            version: 'v3',
+            auth: authClient,
+        });
 
         await calendar.events.delete({
             calendarId: CALENDAR_ID,
@@ -196,7 +215,7 @@ app.get('/api/appointments', async (req, res) => {
 
     try {
         const events = await listCalendarEvents(date);
-        
+
         // Map events to a cleaner format
         const appointments = events.map(event => ({
             id: event.id,
@@ -231,7 +250,7 @@ app.get('/api/appointments', async (req, res) => {
 //         // Format requested start and end times to check overlap
 //         const [timePart, modifier] = time.split(' ');
 //         let [hours, minutes] = timePart.split(':');
-        
+
 //         if (hours === '12') hours = '00';
 //         if (modifier === 'PM') hours = parseInt(hours, 10) + 12;
 
@@ -280,55 +299,56 @@ app.get('/api/appointments', async (req, res) => {
 //     }
 // });
 app.post('/api/book', async (req, res) => {
-  const { name, phone, service, date, time } = req.body;
+    const { name, phone, service, date, time } = req.body;
 
-  if (!name || !service || !date || !time) {
-    return res.status(400).json({ message: 'Name, service, date, and time are required.' });
-  }
-
-  try {
-    console.log("Received booking:", req.body);
-
-    // Convert time to 24h
-    const [timePart, modifier] = time.split(' ');
-    let [hours, minutes] = timePart.split(':');
-
-    if (hours === '12') hours = '00';
-    if (modifier === 'PM') hours = parseInt(hours) + 12;
-
-    const startDate = new Date(`${date}T${hours}:${minutes}:00`);
-    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-
-    // ✅ Check double booking
-    const existingEvents = await listCalendarEvents(date);
-
-    const isOverlap = existingEvents.some(event => {
-      const eventStart = new Date(event.start.dateTime || event.start.date);
-      const eventEnd = new Date(event.end.dateTime || event.end.date);
-      return startDate < eventEnd && endDate > eventStart;
-    });
-
-    if (isOverlap) {
-      return res.status(400).json({ message: 'Sorry, this time slot is already booked.' });
+    if (!name || !service || !date || !time) {
+        return res.status(400).json({ message: 'Name, service, date, and time are required.' });
     }
 
-    // ✅ Add to Google Calendar (MUST succeed)
-    await addCalendarEvent(req.body);
-    console.log("Added to Google Calendar");
+    try {
+        console.log("Received booking:", req.body);
 
-    // ✅ Send Email (MUST succeed)
-    await sendEmailNotification(req.body);
-    console.log("Email sent");
+        // Convert time to 24h
+        const [timePart, modifier] = time.split(' ');
+        let [hours, minutes] = timePart.split(':');
 
-    return res.json({ message: "Booking successful!" });
+        if (hours === '12') hours = '00';
+        if (modifier === 'PM') hours = parseInt(hours) + 12;
 
-  } catch (error) {
-    console.error("BOOKING FAILED:", error);
-    return res.status(500).json({
-      message: "Booking failed",
-      error: error.message
-    });
-  }
+        const startDate = new Date(`${date}T${hours}:${minutes}:00`);
+        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+
+        // ✅ Check double booking
+        const existingEvents = await listCalendarEvents(date);
+
+        const isOverlap = existingEvents.some(event => {
+            const eventStart = new Date(event.start.dateTime || event.start.date);
+            const eventEnd = new Date(event.end.dateTime || event.end.date);
+            return startDate < eventEnd && endDate > eventStart;
+        });
+
+        if (isOverlap) {
+            return res.status(400).json({ message: 'Sorry, this time slot is already booked.' });
+        }
+
+        // ✅ Add to Google Calendar (MUST succeed)
+        await addCalendarEvent(req.body);
+        console.log("Added to Google Calendar");
+
+        // ✅ Send Email (Background task, does not block the user)
+        sendEmailNotification(req.body)
+            .then(() => console.log("Email sent successfully"))
+            .catch(err => console.error("Email failed to send (Render SMTP timeout likely):", err.message));
+
+        return res.json({ message: "Booking successful!" });
+
+    } catch (error) {
+        console.error("BOOKING FAILED:", error);
+        return res.status(500).json({
+            message: "Booking failed",
+            error: error.message
+        });
+    }
 });
 
 // Start Server
