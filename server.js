@@ -355,8 +355,9 @@ app.post('/api/book', async (req, res) => {
 
         // ✅ Send Email (Background task, does not block the user)
         sendEmailNotification(req.body)
-            .then(() => console.log("Email sent successfully"))
-            .catch(err => console.error("Email failed to send (Render SMTP timeout likely):", err.message));
+        console.log("Email sent successfully");
+            // .then(() => console.log("Email sent successfully"))
+            // .catch(err => console.error("Email failed to send (Render SMTP timeout likely):", err.message));
 
         return res.json({ message: "Booking successful!" });
 
