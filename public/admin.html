@@ -42,13 +42,19 @@
             gap: 1rem;
         }
 
-        .appointments-table {
+        .table-responsive {
             width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            overflow: hidden;
+        }
+
+        .appointments-table {
+            width: 100%;
             border-collapse: collapse;
+            min-width: 650px; /* Forces scroll on small screens */
         }
 
         .appointments-table th, .appointments-table td {
@@ -100,6 +106,29 @@
             text-align: center;
             padding: 3rem;
             color: var(--text-muted);
+        }
+
+        /* Responsive Layout Updates */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .date-filter {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .dashboard-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .appointments-table th, .appointments-table td {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>

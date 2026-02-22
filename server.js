@@ -44,15 +44,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-transporter.verify((error, success) => {
-    if (error) {
-        console.error("SMTP VERIFY ERROR:");
-        console.error(error);
-    } else {
-        console.log("SMTP SERVER READY TO SEND MAILS");
-    }
-});
-
 // Helper: Add Event to Google Calendar
 async function addCalendarEvent(bookingData) {
     try {
@@ -159,7 +150,7 @@ async function sendEmailNotification(bookingData) {
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log("MAIL RESPONSE:", info);
+        // console.log("MAIL RESPONSE:", info);
 
     } catch (err) {
         console.error("FULL EMAIL ERROR:");

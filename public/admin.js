@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let html = `
+            <div class="table-responsive">
             <table class="appointments-table">
                 <thead>
                     <tr>
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
 
-        html += `</tbody></table>`;
+        html += `</tbody></table></div>`;
         appointmentsList.innerHTML = html;
     }
 
