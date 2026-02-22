@@ -72,7 +72,7 @@ async function addCalendarEvent(bookingData) {
             hours = parseInt(hours, 10) + 12;
         }
 
-        const startDate = new Date(`${bookingData.date}T${hours}:${minutes}:00`);
+        const startDate = new Date(`${bookingData.date}T${hours}:${minutes}:00+05:30`);
         const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour later
 
         const event = {
@@ -142,8 +142,8 @@ async function listCalendarEvents(date) {
         // But Google Calendar API expects ISO strings. 
         // Let's assume the 'date' param is 'YYYY-MM-DD'
 
-        const timeMin = new Date(`${date}T00:00:00`).toISOString();
-        const timeMax = new Date(`${date}T23:59:59`).toISOString();
+        const timeMin = new Date(`${date}T00:00:00+05:30`).toISOString();
+        const timeMax = new Date(`${date}T23:59:59+05:30`).toISOString();
 
         const res = await calendar.events.list({
             calendarId: CALENDAR_ID,
@@ -315,7 +315,7 @@ app.post('/api/book', async (req, res) => {
         if (hours === '12') hours = '00';
         if (modifier === 'PM') hours = parseInt(hours) + 12;
 
-        const startDate = new Date(`${date}T${hours}:${minutes}:00`);
+        const startDate = new Date(`${date}T${hours}:${minutes}:00+05:30`);
         const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
 
         // ✅ Check double booking
