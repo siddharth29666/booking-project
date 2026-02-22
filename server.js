@@ -208,70 +208,121 @@ app.get('/api/appointments', async (req, res) => {
     }
 });
 
-app.post('/api/book', async (req, res) => {
-    const { name, phone, service, date, time } = req.body;
+// app.post('/api/book', async (req, res) => {
+//     const { name, phone, service, date, time } = req.body;
 
-    // Phone is now optional
-    if (!name || !service || !date || !time) {
-        return res.status(400).json({ message: 'Name, service, date, and time are required.' });
-    }
+//     // Phone is now optional
+//     if (!name || !service || !date || !time) {
+//         return res.status(400).json({ message: 'Name, service, date, and time are required.' });
+//     }
 
-    // Set default value if phone is empty
-    req.body.phone = phone || "Not provided";
+//     // Set default value if phone is empty
+//     req.body.phone = phone || "Not provided";
 
-    try {
-        console.log("Received booking:", req.body);
+//     try {
+//         console.log("Received booking:", req.body);
 
-        // Format requested start and end times to check overlap
-        const [timePart, modifier] = time.split(' ');
-        let [hours, minutes] = timePart.split(':');
+//         // Format requested start and end times to check overlap
+//         const [timePart, modifier] = time.split(' ');
+//         let [hours, minutes] = timePart.split(':');
         
-        if (hours === '12') hours = '00';
-        if (modifier === 'PM') hours = parseInt(hours, 10) + 12;
+//         if (hours === '12') hours = '00';
+//         if (modifier === 'PM') hours = parseInt(hours, 10) + 12;
 
-        const requestStartDate = new Date(`${date}T${hours}:${minutes}:00`);
-        const requestEndDate = new Date(requestStartDate.getTime() + 60 * 60 * 1000);
+//         const requestStartDate = new Date(`${date}T${hours}:${minutes}:00`);
+//         const requestEndDate = new Date(requestStartDate.getTime() + 60 * 60 * 1000);
 
-        // Check for double bookings via Google Calendar
-        try {
-            const existingEvents = await listCalendarEvents(date);
-            const isOverlap = existingEvents.some(event => {
-                const eventStart = new Date(event.start.dateTime || event.start.date);
-                const eventEnd = new Date(event.end.dateTime || event.end.date);
-                return requestStartDate < eventEnd && requestEndDate > eventStart;
-            });
+//         // Check for double bookings via Google Calendar
+//         try {
+//             const existingEvents = await listCalendarEvents(date);
+//             const isOverlap = existingEvents.some(event => {
+//                 const eventStart = new Date(event.start.dateTime || event.start.date);
+//                 const eventEnd = new Date(event.end.dateTime || event.end.date);
+//                 return requestStartDate < eventEnd && requestEndDate > eventStart;
+//             });
 
-            if (isOverlap) {
-                return res.status(400).json({ message: 'Sorry, this time slot is already booked.' });
-            }
-        } catch (calCheckError) {
-             console.warn("Could not fetch calendar to check overlaps:", calCheckError.message);
-        }
+//             if (isOverlap) {
+//                 return res.status(400).json({ message: 'Sorry, this time slot is already booked.' });
+//             }
+//         } catch (calCheckError) {
+//              console.warn("Could not fetch calendar to check overlaps:", calCheckError.message);
+//         }
 
-        // 1. Add to Google Calendar
-        // NOTE: If credentials are missing, this might fail. We will wrap it.
-        try {
-           await addCalendarEvent(req.body);
-           console.log("Successfully added to Google Calendar");
-        } catch (calError) {
-            console.error("Calendar integration failed:", calError);
-            console.error("PROBABLE CAUSE: Service Account email not shared with Calendar ID, or wrong Calendar ID.");
-        }
+//         // 1. Add to Google Calendar
+//         // NOTE: If credentials are missing, this might fail. We will wrap it.
+//         try {
+//            await addCalendarEvent(req.body);
+//            console.log("Successfully added to Google Calendar");
+//         } catch (calError) {
+//             console.error("Calendar integration failed:", calError);
+//             console.error("PROBABLE CAUSE: Service Account email not shared with Calendar ID, or wrong Calendar ID.");
+//         }
 
-        // 2. Send Email
-        try {
-            await sendEmailNotification(req.body);
-            console.log("Email sent successfully");
-        } catch (emailError) {
-             console.warn("Email sending failed:", emailError.message);
-        }
+//         // 2. Send Email
+//         try {
+//             await sendEmailNotification(req.body);
+//             console.log("Email sent successfully");
+//         } catch (emailError) {
+//              console.warn("Email sending failed:", emailError.message);
+//         }
 
-        res.status(200).json({ message: 'Booking successful!' });
+//         res.status(200).json({ message: 'Booking successful!' });
 
-    } catch (error) {
-        console.error("Booking Error:", error);
-        res.status(500).json({ message: 'Internal Server Error' });
+//     } catch (error) {
+//         console.error("Booking Error:", error);
+//         res.status(500).json({ message: 'Internal Server Error' });
+//     }
+// });
+app.post('/api/book', async (req, res) => {
+  const { name, phone, service, date, time } = req.body;
+
+  if (!name || !service || !date || !time) {
+    return res.status(400).json({ message: 'Name, service, date, and time are required.' });
+  }
+
+  try {
+    console.log("Received booking:", req.body);
+
+    // Convert time to 24h
+    const [timePart, modifier] = time.split(' ');
+    let [hours, minutes] = timePart.split(':');
+
+    if (hours === '12') hours = '00';
+    if (modifier === 'PM') hours = parseInt(hours) + 12;
+
+    const startDate = new Date(`${date}T${hours}:${minutes}:00`);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+
+    // ✅ Check double booking
+    const existingEvents = await listCalendarEvents(date);
+
+    const isOverlap = existingEvents.some(event => {
+      const eventStart = new Date(event.start.dateTime || event.start.date);
+      const eventEnd = new Date(event.end.dateTime || event.end.date);
+      return startDate < eventEnd && endDate > eventStart;
+    });
+
+    if (isOverlap) {
+      return res.status(400).json({ message: 'Sorry, this time slot is already booked.' });
     }
+
+    // ✅ Add to Google Calendar (MUST succeed)
+    await addCalendarEvent(req.body);
+    console.log("Added to Google Calendar");
+
+    // ✅ Send Email (MUST succeed)
+    await sendEmailNotification(req.body);
+    console.log("Email sent");
+
+    return res.json({ message: "Booking successful!" });
+
+  } catch (error) {
+    console.error("BOOKING FAILED:", error);
+    return res.status(500).json({
+      message: "Booking failed",
+      error: error.message
+    });
+  }
 });
 
 // Start Server
