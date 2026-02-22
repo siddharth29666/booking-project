@@ -35,7 +35,9 @@ const GOOGLE_CREDENTIALS = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
 // Email Configuration (Nodemailer)
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Or use SMTP host/port from env
+    host: 'smtp.gmail.com',
+    port: 465, // Force secure port 465 which is usually not blocked
+    secure: true,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS // App Password for Gmail
@@ -353,11 +355,10 @@ app.post('/api/book', async (req, res) => {
         await addCalendarEvent(req.body);
         console.log("Added to Google Calendar");
 
-        // ✅ Send Email (Background task, does not block the user)
+        // ✅ Send Email (Background task)
         sendEmailNotification(req.body)
-        console.log("Email sent successfully");
-            // .then(() => console.log("Email sent successfully"))
-            // .catch(err => console.error("Email failed to send (Render SMTP timeout likely):", err.message));
+            .then(() => console.log("Email sent successfully"))
+            .catch(err => console.error("Email failed to send:", err.message));
 
         return res.json({ message: "Booking successful!" });
 
