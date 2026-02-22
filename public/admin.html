@@ -110,19 +110,40 @@
 
         /* Responsive Layout Updates */
         @media (max-width: 768px) {
+            body {
+                padding-top: 60px;
+            }
             .dashboard-header {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            
-            .date-filter {
-                width: 100%;
-                justify-content: space-between;
+                align-items: center;
+                gap: 1.2rem;
+                padding: 1.2rem;
             }
             
             .dashboard-header h1 {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
+                text-align: center;
+            }
+
+            .date-filter {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .date-filter label {
+                text-align: center;
+                font-size: 0.95rem;
+            }
+
+            .date-filter input[type="date"] {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 0.8rem;
+                font-size: 1rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
             }
             
             .appointments-table th, .appointments-table td {
