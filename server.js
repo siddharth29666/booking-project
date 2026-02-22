@@ -23,9 +23,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Google Calendar Configuration
 // NOTE: This usually requires a service account key file (e.g., credentials.json)
 // For this environment, we will look for KEY_FILE_PATH in env or default to 'credentials.json'
-const KEY_FILE_PATH = process.env.KEY_FILE_PATH || 'credentials.json';
+
 const CALENDAR_ID = process.env.CALENDAR_ID || 'primary';
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
+
+const GOOGLE_CREDENTIALS = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+
+// const KEY_FILE_PATH = process.env.KEY_FILE_PATH || 'credentials.json';
+// const CALENDAR_ID = process.env.CALENDAR_ID || 'primary';
+// const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 
 // Email Configuration (Nodemailer)
 const transporter = nodemailer.createTransport({
@@ -40,7 +46,7 @@ const transporter = nodemailer.createTransport({
 async function addCalendarEvent(bookingData) {
     try {
         const auth = new google.auth.GoogleAuth({
-            keyFile: KEY_FILE_PATH,
+            credentials: GOOGLE_CREDENTIALS,
             scopes: SCOPES,
         });
 
@@ -112,7 +118,7 @@ async function sendEmailNotification(bookingData) {
 async function listCalendarEvents(date) {
     try {
         const auth = new google.auth.GoogleAuth({
-            keyFile: KEY_FILE_PATH,
+            credentials: GOOGLE_CREDENTIALS,
             scopes: SCOPES,
         });
 
@@ -146,7 +152,7 @@ async function listCalendarEvents(date) {
 async function deleteCalendarEvent(eventId) {
     try {
         const auth = new google.auth.GoogleAuth({
-            keyFile: KEY_FILE_PATH,
+            credentials: GOOGLE_CREDENTIALS,
             scopes: SCOPES,
         });
 
