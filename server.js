@@ -72,18 +72,36 @@ async function addCalendarEvent(bookingData) {
             hours = parseInt(hours, 10) + 12;
         }
 
-        const startDate = new Date(`${bookingData.date}T${hours}:${minutes}:00+05:30`);
-        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour later
+        // const startDate = new Date(`${bookingData.date}T${hours}:${minutes}:00+05:30`);
+        // const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour later
+
+        // const event = {
+        //     summary: `Booking: ${bookingData.name} - ${bookingData.service}`,
+        //     description: `Phone: ${bookingData.phone}\nService: ${bookingData.service}`,
+        //     start: {
+        //         dateTime: startDate.toISOString(),
+        //         timeZone: 'Asia/Kolkata', // Set appropriate timezone
+        //     },
+        //     end: {
+        //         dateTime: endDate.toISOString(),
+        //         timeZone: 'Asia/Kolkata',
+        //     },
+        // };
+        // build datetime manually in local time
+        const startDateTime = `${bookingData.date}T${hours}:${minutes}:00`;
+
+        const endHour = String(parseInt(hours) + 1).padStart(2, '0');
+        const endDateTime = `${bookingData.date}T${endHour}:${minutes}:00`;
 
         const event = {
             summary: `Booking: ${bookingData.name} - ${bookingData.service}`,
             description: `Phone: ${bookingData.phone}\nService: ${bookingData.service}`,
             start: {
-                dateTime: startDate.toISOString(),
-                timeZone: 'Asia/Kolkata', // Set appropriate timezone
+                dateTime: startDateTime,
+                timeZone: 'Asia/Kolkata',
             },
             end: {
-                dateTime: endDate.toISOString(),
+                dateTime: endDateTime,
                 timeZone: 'Asia/Kolkata',
             },
         };
