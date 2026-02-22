@@ -85,25 +85,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Expose delete function to window so onclick works
     window.deleteAppointment = async (id) => {
-        if (!confirm('Are you sure you want to cancel this appointment? This will remove it from Google Calendar.')) {
-            return;
-        }
+        const result = await Swal.fire({
+            title: 'Cancel Appointment?',
+            text: "This will permanently remove it from Google Calendar. You cannot undo this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#b76e79', // Theme rose-gold
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'Keep it'
+        });
 
-        try {
-            const response = await fetch(`/api/appointments/${id}`, {
-                method: 'DELETE',
-            });
+        if (result.isConfirmed) {
+            try {
+                // Show loading state
+                Swal.fire({
+                    title: 'Canceling...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
-            if (response.ok) {
-                // Refresh list
-                const date = document.getElementById('adminDate').value;
-                fetchAppointments(date);
-            } else {
-                alert('Failed to delete appointment.');
+                const response = await fetch(`/api/appointments/${id}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Canceled!',
+                        text: 'The appointment has been removed.',
+                        icon: 'success',
+                        confirmButtonColor: '#b76e79'
+                    });
+                    // Refresh list
+                    const date = document.getElementById('adminDate').value;
+                    fetchAppointments(date);
+                } else {
+                    Swal.fire('Error', 'Failed to delete appointment.', 'error');
+                }
+            } catch (error) {
+                console.error('Delete Error:', error);
+                Swal.fire('Error', 'Error deleting appointment.', 'error');
             }
-        } catch (error) {
-            console.error('Delete Error:', error);
-            alert('Error deleting appointment.');
         }
     };
 });
